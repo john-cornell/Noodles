@@ -77,7 +77,7 @@ namespace Noodles.Test
         {
             
             RandomProvider provider = new RandomProvider();
-            List<double> doubles = provider.GetRandomDoubles(50).ToList();
+            List<double> doubles = provider.GetRandomDoubles(5).ToList();
 
             double expected = BruteForceCalculateArithmeticMean(doubles);
 
