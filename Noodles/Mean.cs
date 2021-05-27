@@ -5,9 +5,9 @@ namespace Noodles
 {
     public class Mean
     {
-        public static ArithmeticMeanCalculator Arithmetic { get; private set; }
+        public ArithmeticMeanCalculator Arithmetic { get; private set; }
 
-        static Mean()
+        public Mean()
         {
             Arithmetic = new ArithmeticMeanCalculator();
         }

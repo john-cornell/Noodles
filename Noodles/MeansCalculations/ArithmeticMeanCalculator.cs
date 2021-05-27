@@ -12,6 +12,16 @@ namespace Noodles.MeansCalculations
 
         }
 
-        public int Calculate(IEnumerable<int> values) => values == null ? 0 : values.Sum() / values.Count();
+        public double Calculate(IEnumerable<double> values) =>
+            values == null || values.Count() == 0 ?
+                0 :
+                values.Select(i => (double)i).Sum() / values.Count();
+
+        public double Calculate(IEnumerable<int> values)
+        {
+            if (values == null || values.Count() == 0) return 0;
+
+            return Calculate(values.Select(i => (double)i));
+        }
     }
 }
