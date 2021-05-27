@@ -7,15 +7,10 @@ namespace Noodles.MeansCalculations
 {
     public class ArithmeticMeanCalculator
     {
-        public ArithmeticMeanCalculator()
-        {
-
-        }
-
         public double Calculate(IEnumerable<double> values) =>
             values == null || values.Count() == 0 ?
                 0 :
-                values.Select(i => (double)i).Sum() / values.Count();
+                values.Select(i => (double)i).Sum() / ((double)values.Count());
 
         public double Calculate(IEnumerable<int> values)
         {
