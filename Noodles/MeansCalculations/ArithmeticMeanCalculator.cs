@@ -7,9 +7,7 @@ namespace Noodles.MeansCalculations
 {
     public class ArithmeticMeanCalculator : MeanCalculator
     {
-        public override double Calculate(IEnumerable<double> values) =>
-            values == null || values.Count() == 0 ?
-                0 :
-                values.Select(i => (double)i).Sum() / ((double)values.Count());
+        protected override double InternalCalculate(IEnumerable<double> values) =>
+            values.Select(i => (double)i).Sum() / ((double)values.Count());
     }
 }

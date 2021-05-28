@@ -9,6 +9,7 @@ namespace Noodles.Test
     [TestClass]
     public class AggregationTests
     {
+        #region Means Calculations
         [TestMethod]
         public void WhenArithmeticMeanCalled_ShouldNotFail()
         {
@@ -44,27 +45,93 @@ namespace Noodles.Test
         }
 
         [TestMethod]
-        public void WhenArithmeticMeanCalled_GivenDoubleNull_ShouldReturnZero()
+        public void WhenHarmonicMeanCalled_ShouldNotFail()
+        {
+            bool exception = false;
+            try
+            {
+                List<int> values = new List<int> { 2, 6, 4, 2, 12 };
+                Calculator.Means.Harmonic(values);
+            }
+            catch
+            {
+                exception = true;
+            }
+
+            Assert.IsFalse(exception);
+        }
+
+        [TestMethod]
+        public void WhenMedianCalled_ShouldNotFail()
+        {
+            bool exception = false;
+            try
+            {
+                List<int> values = new List<int> { 2, 6, 4, 2, 12 };
+                Calculator.Means.Median(values);
+            }
+            catch
+            {
+                exception = true;
+            }
+
+            Assert.IsFalse(exception);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void WhenArithmeticMeanCalled_GivenDoubleNull_ShouldThrowArgumentNullException()
         {
             Assert.AreEqual(0, Calculator.Means.Arithmetic((double[])null));
         }
 
         [TestMethod]
-        public void WhenGeometricMeanCalled_GivenDoubleNull_ShouldReturnZero()
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void WhenGeometricMeanCalled_GivenDoubleNull_ShouldThrowArgumentException()
         {
             Assert.AreEqual(0, Calculator.Means.Geometric((double[])null));
         }
 
         [TestMethod]
-        public void WhenArithmeticMeanCalled_GivenIntNull_ShouldReturnZero()
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void WhenHarmonicMeanCalled_GivenDoubleNull_ShouldThrowArgumentException()
+        {
+            Assert.AreEqual(0, Calculator.Means.Harmonic((double[])null));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void WhenMedianCalled_GivenDoubleNull_ShouldThrowArgumentException()
+        {
+            Assert.AreEqual(0, Calculator.Means.Median((double[])null));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void WhenArithmeticMeanCalled_GivenIntNull_ShouldThrowArgumentException()
         {
             Assert.AreEqual(0, Calculator.Means.Arithmetic((int[])null));
         }
 
         [TestMethod]
-        public void WhenGeometricMeanCalled_GivenIntNull_ShouldReturnZero()
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void WhenGeometricMeanCalled_GivenIntNull_ShouldThrowArgumentException()
         {
             Assert.AreEqual(0, Calculator.Means.Geometric((int[])null));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void WhenHarmonicMeanCalled_GivenIntNull_ShouldThrowArgumentException()
+        {
+            Assert.AreEqual(0, Calculator.Means.Harmonic((int[])null));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void WhenMedianCalled_GivenIntNull_ShouldThrowArgumentException()
+        {
+            Assert.AreEqual(0, Calculator.Means.Median((int[])null));
         }
 
         [TestMethod]
@@ -80,6 +147,12 @@ namespace Noodles.Test
         }
 
         [TestMethod]
+        public void WhenHarmonicMeanCalled_GivenEmptyEnumerable_ShouldReturnZero()
+        {
+            Assert.AreEqual(0, Calculator.Means.Harmonic(new int[] { }));
+        }
+
+        [TestMethod]
         public void WhenArithmeticMeanCalled_GivenIntEnumerableKnown_1_ShouldReturnCorrectAnswer()
         {
             Assert.AreEqual(3.5, Calculator.Means.Arithmetic(new int[] { 1, 2, 3, 4, 5, 6 }));
@@ -92,6 +165,12 @@ namespace Noodles.Test
         }
 
         [TestMethod]
+        public void WhenHarmonicMeanCalled_GivenIntEnumerableKnown_1_ShouldReturnCorrectAnswer()
+        {
+            Assert.AreEqual(2.9435, Math.Round(Calculator.Means.Harmonic(new int[] { 1, 2, 3, 4, 5, 6, 7, 8 }), 5));
+        }
+
+        [TestMethod]
         public void WhenArithmeticMeanCalled_GivenIntEnumerableKnown_2_ShouldReturnCorrectAnswer()
         {
             Assert.AreEqual((double)333 + ((double)1 / 3), Calculator.Means.Arithmetic(new int[] { 12, 97, 123, 401, 1275, 92 }));
@@ -101,6 +180,12 @@ namespace Noodles.Test
         public void WhenGeometricMeanCalled_GivenIntEnumerableKnown_2_ShouldReturnCorrectAnswer()
         {
             Assert.AreEqual(13.477, Math.Round(Calculator.Means.Geometric(new int[] { 15, 12, 13, 19, 10 }), 3));
+        }
+
+        [TestMethod]
+        public void WhenHarmonicMeanCalled_GivenIntEnumerableKnown_2_ShouldReturnCorrectAnswer()
+        {
+            Assert.AreEqual(13.1733, Calculator.Means.Harmonic(new int[] { 15, 12, 13, 19, 10 }), 3);
         }
 
         [TestMethod]
@@ -118,12 +203,24 @@ namespace Noodles.Test
         public void WhenGeometricMeanCalled_GivenIntEnumerableRandom_ShouldReturnCorrectAnswer()
         {
             RandomProvider provider = new RandomProvider();
-            
+
             List<int> ints = provider.GetRandomInts(50).ToList();
 
             double expected = BruteForceCalculateGeometricMean(ints);
 
             Assert.AreEqual(expected, Calculator.Means.Geometric(ints));
+        }
+
+        [TestMethod]
+        public void WhenHarmonicMeanCalled_GivenIntEnumerableRandom_ShouldReturnCorrectAnswer()
+        {
+            RandomProvider provider = new RandomProvider();
+
+            List<int> ints = provider.GetRandomInts(50).ToList();
+
+            double expected = BruteForceCalculateHarmonicMean(ints);
+
+            Assert.AreEqual(expected, Calculator.Means.Harmonic(ints));
         }
 
         [TestMethod]
@@ -142,7 +239,20 @@ namespace Noodles.Test
         public void WhenGeometricMeanCalled_GivenDoubleEnumerableKnown_2_ShouldReturnCorrectAnswer()
         {
             Assert.AreEqual(72.90905, Math.Round(
-                Calculator.Means.Geometric(new double[] { 97.521, 52.6987, 8.95, 456.1154,  98.2})), 5);
+                Calculator.Means.Geometric(new double[] { 97.521, 52.6987, 8.95, 456.1154, 98.2 }), 5));
+        }
+
+        [TestMethod]
+        public void WhenHarmonicMeanCalled_GivenDoubleEnumerableKnown_1_ShouldReturnCorrectAnswer()
+        {
+            Assert.AreEqual(0.4967, Math.Round(Calculator.Means.Harmonic(new double[] { 0.6, 0.9, 0.26, 0.7 }), 4));
+        }
+
+        [TestMethod]
+        public void WhenHarmonicMeanCalled_GivenDoubleEnumerableKnown_2_ShouldReturnCorrectAnswer()
+        {
+            Assert.AreEqual(32.6078, Math.Round(
+                Calculator.Means.Harmonic(new double[] { 97.521, 52.6987, 8.95, 456.1154, 98.2 }), 4));
         }
 
         [TestMethod]
@@ -168,6 +278,19 @@ namespace Noodles.Test
 
             Assert.AreEqual(expected, Calculator.Means.Arithmetic(doubles));
         }
+
+        [TestMethod]
+        public void WhenHarmonicMeanCalled_GivenDoubleEnumerableRandom_ShouldReturnCorrectAnswer()
+        {
+
+            RandomProvider provider = new RandomProvider();
+            List<double> doubles = provider.GetRandomDoubles(50).ToList();
+
+            double expected = BruteForceCalculateHarmonicMean(doubles);
+
+            Assert.AreEqual(expected, Calculator.Means.Harmonic(doubles));
+        }
+
         public double BruteForceCalculateArithmeticMean(IEnumerable<int> values)
         {
             return BruteForceCalculateArithmeticMean(values.Select(i => (double)i));
@@ -196,5 +319,34 @@ namespace Noodles.Test
 
             return Math.Pow(product, (1d / (double)values.Count()));
         }
+
+        public double BruteForceCalculateHarmonicMean(IEnumerable<int> values)
+        {
+            return BruteForceCalculateHarmonicMean(values.Select(i => (double)i));
+        }
+        public double BruteForceCalculateHarmonicMean(IEnumerable<double> values)
+        {
+            double n = (double)values.Count();
+
+            double sum = 0d;
+
+            foreach (double d in values)
+            {
+                sum += (1d / d);
+            }
+
+            return n / sum;
+        }
+        #endregion
+
+        #region Aggregation Properties
+
+        [TestMethod]
+        public void WhenSymmetryOfArithmeticMeanTested_ShouldPass()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }
