@@ -135,7 +135,7 @@ namespace Noodles.Test
         [TestMethod]
         public void WhenGeometricMeanCalled_GivenDoubleEnumerableKnown_1_ShouldReturnCorrectAnswer()
         {
-            Assert.AreEqual(5.25, Calculator.Means.Geometric(new double[] { 3.5d, 3.25d, 10.05, 4.2 }));
+            Assert.AreEqual(4.681, Math.Round(Calculator.Means.Geometric(new double[] { 3.5d, 3.25d, 10.05, 4.2 }), 3));
         }
 
         [TestMethod]
@@ -148,20 +148,15 @@ namespace Noodles.Test
         [TestMethod]
         public void WhenGeometricMeanCalled_GivenDoubleEnumerableRandom_ShouldReturnCorrectAnswer()
         {
-            throw new NotImplementedException();
-
-
             RandomProvider provider = new RandomProvider();
-            List<double> doubles = provider.GetRandomDoubles(5).ToList();
+            List<double> doubles = provider.GetRandomDoubles(50).ToList();
 
-            double expected = BruteForceCalculateArithmeticMean(doubles);
+            double expected = BruteForceCalculateGeometricMean(doubles);
 
-            Assert.AreEqual(expected, Calculator.Means.Arithmetic(doubles));
+            Assert.AreEqual(expected, Calculator.Means.Geometric(doubles));
         }
 
         //Testing with a more brute force algorithm than implemented in code
-
-
         [TestMethod]
         public void WhenArithmeticMeanCalled_GivenDoubleEnumerableRandom_ShouldReturnCorrectAnswer()
         {
