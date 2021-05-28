@@ -5,18 +5,11 @@ using System.Text;
 
 namespace Noodles.MeansCalculations
 {
-    public class ArithmeticMeanCalculator
+    public class ArithmeticMeanCalculator : MeanCalculator
     {
-        public double Calculate(IEnumerable<double> values) =>
+        public override double Calculate(IEnumerable<double> values) =>
             values == null || values.Count() == 0 ?
                 0 :
                 values.Select(i => (double)i).Sum() / ((double)values.Count());
-
-        public double Calculate(IEnumerable<int> values)
-        {
-            if (values == null || values.Count() == 0) return 0;
-
-            return Calculate(values.Select(i => (double)i));
-        }
     }
 }
