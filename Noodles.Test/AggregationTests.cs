@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Noodles.MeansCalculations;
 using Noodles.Test.Utilities;
 using System;
 using System.Collections.Generic;
@@ -342,9 +343,41 @@ namespace Noodles.Test
         #region Aggregation Properties
 
         [TestMethod]
+        public void WhenMeansCalledFromAggregationStatic_ShouldNotBeNull()
+        {
+            Assert.IsNotNull(Aggregation.Means);
+        }
+
+        [TestMethod]
+        public void WhenPropertiesCalledFromAggregationStatic_ShouldNotBeNull()
+        {
+            Assert.IsNotNull(Aggregation.Properties);
+        }
+
+
+        [TestMethod]
+        public void WhenSymmetryTestCalledFromAggregationStatic_ShouldNotBeNull()
+        {
+            Assert.IsNotNull(Aggregation.Properties.Symmetry);
+        }
+
+
+
+        [TestMethod]
         public void WhenSymmetryOfArithmeticMeanTested_ShouldPass()
         {
-            throw new NotImplementedException();
+            IEnumerable<int> values = new RandomProvider().GetRandomInts(100);
+            Assert.IsTrue(Aggregation.Properties.Symmetry.Test(values, new ArithmeticMeanCalculator()));
+        }
+
+        [TestMethod]
+        /// <summary>
+        /// Not sure if positionally weighted can be counted as aggregation, but here just to test fail
+        /// </summary>
+        public void WhenSymmetryOfPositionalWeightedAggregationTested_ShouldNotPass()
+        {
+            IEnumerable<int> values = new RandomProvider().GetRandomInts(100);
+            Assert.IsTrue(Aggregation.Properties.Symmetry.Test(values, new PositionallyWeightedAggregation()));
         }
 
         #endregion
