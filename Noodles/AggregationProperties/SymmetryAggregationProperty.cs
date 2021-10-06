@@ -9,20 +9,28 @@ namespace Noodles.AggregationProperties
 {
     public class SymmetryAggregationProperty : AggregationProperty
     {
-        public override bool Test(IEnumerable<double> values, IMeanCalculator calculator, AggregationTestTypes method = AggregationTestTypes.Default)
+        public SymmetryAggregationProperty()
         {
-            bool shuffle = (int)(method & AggregationTestTypes.Symmetry_Shuffle) != 0;
-            bool cycle = (int)(method & AggregationTestTypes.Symmetry_Cycle) != 0;
 
-            double raw = calculator.Calculate(values);
+        }
+
+        public override bool Test(IEnumerable<float> values, IMeanCalculator calculator, AggregationTestTypes method = AggregationTestTypes.Default)
+        {
+            bool @default = (int)(method & AggregationTestTypes.Default) != 0;
+            bool shuffle = (int)(method & AggregationTestTypes.Symmetry_Shuffle) != 0 || @default;
+            bool cycle = (int)(method & AggregationTestTypes.Symmetry_Cycle) != 0 || @default;
+
+            float raw = calculator.Calculate(values);
+
+            if (!(shuffle || cycle)) throw new InvalidOperationException($"Invalid Aggregation Test Type {method}");
 
             if (shuffle)
             {
                 int n = values.Count();
 
                 for (int i = 1; i < n; i++)
-                {                    
-                    double shuffled = calculator.Calculate(values.Shuffle());
+                {
+                    float shuffled = calculator.Calculate(values.Shuffle());
 
                     if (raw != shuffled) return false;
                 }
@@ -30,7 +38,7 @@ namespace Noodles.AggregationProperties
 
             if (cycle)
             {
-                foreach(IEnumerable<double> cycled in values.Cycle())
+                foreach (IEnumerable<float> cycled in values.Cycle())
                 {
                     if (raw != calculator.Calculate(cycled)) return false;
                 }

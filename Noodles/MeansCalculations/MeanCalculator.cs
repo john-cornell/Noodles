@@ -7,7 +7,7 @@ namespace Noodles.MeansCalculations
 {
     public abstract class MeanCalculator : IMeanCalculator
     {
-        public double Calculate(IEnumerable<double> values)
+        public float Calculate(IEnumerable<float> values)
         {
             if (values == null) throw new ArgumentNullException("values");
 
@@ -16,15 +16,17 @@ namespace Noodles.MeansCalculations
             return InternalCalculate(values);
         }
 
-        protected abstract double InternalCalculate(IEnumerable<double> values);
+        protected abstract float InternalCalculate(IEnumerable<float> values);
 
-        public double Calculate(IEnumerable<int> values)
+        public float Calculate(IEnumerable<int> values)
         {
             if (values == null) throw new ArgumentNullException("values");
 
             if (values.Count() == 0) return 0;
 
-            return Calculate(values.Select(i => (double)i));
+            return Calculate(values.Select(i => (float)i));
         }
+
+        //Yucky brute force - lack of decimal 
     }
 }

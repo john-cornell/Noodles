@@ -18,16 +18,16 @@ namespace Noodles
             _median = new MedianCalculator();
         }
 
-        public double Arithmetic(IEnumerable<int> values) => _arithmetic.Calculate(values);
-        public double Arithmetic(IEnumerable<double> values) => _arithmetic.Calculate(values);
+        public float Arithmetic(IEnumerable<int> values) => _arithmetic.Calculate(values);
+        public float Arithmetic(IEnumerable<float> values) => _arithmetic.Calculate(values);
 
-        public double Geometric(IEnumerable<int> values) => _geometric.Calculate(values);
-        public double Geometric(IEnumerable<double> values) => _geometric.Calculate(values);
+        public float Geometric(IEnumerable<int> values) => _geometric.Calculate(values);
+        public float Geometric(IEnumerable<float> values) => _geometric.Calculate(values);
 
-        public double Harmonic(IEnumerable<int> values) => _harmonic.Calculate(values);
-        public double Harmonic(IEnumerable<double> values) => _harmonic.Calculate(values);
+        public float Harmonic(IEnumerable<int> values) => _harmonic.Calculate(values);
+        public float Harmonic(IEnumerable<float> values) => _harmonic.Calculate(values);
 
-        public double Median(IEnumerable<int> values) => _median.Calculate(values);
-        public double Median(IEnumerable<double> values) => _median.Calculate(values);
+        public float Median(IEnumerable<int> values) => _median.Calculate(values);
+        public float Median(IEnumerable<float> values) => _median.Calculate(values);
     }
 }

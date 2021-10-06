@@ -7,10 +7,10 @@ namespace Noodles.MeansCalculations
 {
     public class HarmonicMeanCalculator : MeanCalculator
     {
-        protected override double InternalCalculate(IEnumerable<double> values) =>
+        protected override float InternalCalculate(IEnumerable<float> values) =>
             values.Count() /
                 (
-                    values.Select(v => 1d / v).Sum()
+                    values.Select(v => 1f / v).Sum()
                 );
 
     }
