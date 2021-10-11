@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Noodles.ML.Data.Stores.Factories
+namespace Noodles.Data.Stores.Factories
 {
     public static class DataStoreFactory<T>
     {

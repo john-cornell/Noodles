@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Noodles.Data.Projections;
+using Noodles.Data.Stores;
 using Noodles.Exceptions;
-using Noodles.ML.Data;
-using Noodles.ML.Data.Stores;
 
 namespace Noodles.Test
 {
     [TestClass]
-    public class When_DataTable_Created_Tests
+    public class When_DataTable_Created
     {
         [DataTestMethod]
         [DataRow(DataStoreType.SingleArray)]

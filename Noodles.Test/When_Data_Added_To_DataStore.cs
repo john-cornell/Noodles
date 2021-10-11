@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Noodles.ML.Data;
-using Noodles.ML.Data.Stores;
+using Noodles.Data.Projections;
+using Noodles.Data.Stores;
 using Noodles.Test.Utilities;
 
 namespace Noodles.Test
 {
     [TestClass]
-    public class When_Data_Added_To_DataStore_Tests
+    public class When_Data_Added_To_DataStore
     {
         RandomProvider _random;
         DataProvider _data;
@@ -70,8 +70,9 @@ namespace Noodles.Test
         {
             TestDataContext context = _data.GetTestDataContext(dataStoreType, dataLoadStrategy);
 
-            int rowToRetrieve = _random.GetRandomInt(0, context.Table.RowCount) * (negativeRow ? -1 : 1);
-            int columnToRetrieve = _random.GetRandomInt(0, context.Table.ColumnCount) * (negativeColumn ? -1 : 1);
+            //Start random at 1 to ensure a negative number is given when *-1
+            int rowToRetrieve = _random.GetRandomInt(1, context.Table.RowCount) * (negativeRow ? -1 : 1);
+            int columnToRetrieve = _random.GetRandomInt(1, context.Table.ColumnCount) * (negativeColumn ? -1 : 1);
 
             decimal iDontExist = context.Table.Data[rowToRetrieve, columnToRetrieve];
         }
@@ -117,6 +118,54 @@ namespace Noodles.Test
 
             Assert.AreEqual(newData, context.Table.Data[rowToModify, columnToModify]);
         }
+
+        [DataTestMethod]
+        [DataRow(DataStoreType.SingleArray, DataLoadStrategy.EnumOfEnum)]
+        [DataRow(DataStoreType.SingleArray, DataLoadStrategy.Params)]
+        [DataRow(DataStoreType.SingleArray, DataLoadStrategy.RowByRow)]
+        public void ShouldCorrectlyUpdate_When_DataRowInserted(DataStoreType dataStoreType, DataLoadStrategy dataLoadStrategy)
+        {
+            TestDataContext context = _data.GetTestDataContext(dataStoreType, dataLoadStrategy);
+            int sourceRow = _random.GetRandomInt(0, context.Table.RowCount);
+            int destinationRow;
+            do
+            {
+                destinationRow = _random.GetRandomInt(0, context.Table.RowCount);
+            }
+            while (sourceRow == destinationRow);
+
+            context.Table.Row[sourceRow] = context.Table.Row[destinationRow];
+
+
+            AssertDataRowsAreCorrect(context.Table.Row[sourceRow], context.Table.Row[destinationRow]);
+        }
+
+        [DataTestMethod]
+        [DataRow(DataStoreType.SingleArray, DataLoadStrategy.EnumOfEnum)]
+        [DataRow(DataStoreType.SingleArray, DataLoadStrategy.Params)]
+        [DataRow(DataStoreType.SingleArray, DataLoadStrategy.RowByRow)]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
+        public void ShouldThrowException_IfRowDataInsert_ColumnSizesDoNotMatch(DataStoreType dataStoreType, DataLoadStrategy dataLoadStrategy)
+        {
+            TestDataContext context = _data.GetTestDataContext(dataStoreType, dataLoadStrategy);
+            TestDataContext context2;
+
+            do
+            {
+                context2 = _data.GetTestDataContext(dataStoreType, dataLoadStrategy);
+            }
+            while (context2.Table.ColumnCount == context.Table.ColumnCount);
+
+            int sourceRow = _random.GetRandomInt(0, context.Table.RowCount);
+            int destinationRow = _random.GetRandomInt(0, context2.Table.RowCount);
+
+            context.Table.Row[sourceRow] = context2.Table.Row[destinationRow];
+
+            AssertDataRowsAreCorrect(context.Table.Row[sourceRow], context2.Table.Row[destinationRow]);
+        }
+
+        private static void AssertDataRowsAreCorrect(DataRow<decimal> row1, DataRow<decimal> row2) =>
+            Assert.IsTrue(Enumerable.SequenceEqual(row1, row2));
 
         private static void AssertTestDataCorrect(
             DataTable table, List<List<decimal>> testData)

@@ -1,4 +1,4 @@
-﻿namespace Noodles.ML.Data.Stores
+﻿namespace Noodles.Data.Stores
 {
     public enum DataStoreType
     {

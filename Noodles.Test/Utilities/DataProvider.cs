@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Noodles.ML.Data;
-using Noodles.ML.Data.Stores;
+using Noodles.Data.Projections;
+using Noodles.Data.Stores;
 
 namespace Noodles.Test.Utilities
 {
     public enum DataLoadStrategy { EnumOfEnum, RowByRow, Params }
+
     public class DataProvider
     {
         RandomProvider _random;
@@ -63,11 +65,52 @@ namespace Noodles.Test.Utilities
                 TestData = testData
             };
         }
+
+        public DataRowContext GetDataRowContext(
+            DataStoreType dataStoreType,
+            DataLoadStrategy dataLoadStrategy,
+            DataRowCreationMethod creationMethod, int? row = null)
+        {
+            TestDataContext context = GetTestDataContext(dataStoreType, dataLoadStrategy);
+
+            if (!row.HasValue) row = _random.GetRandomInt(0, context.Table.RowCount);
+
+            DataRow<decimal> dataRow;
+
+            switch (creationMethod)
+            {
+                case DataRowCreationMethod.FromCtorWithDataStore:
+                    dataRow = new DataRow<decimal>(context.Table.Data, row.Value);
+                    break;
+                case DataRowCreationMethod.FromCtorWithProjection:
+                    dataRow = new DataRow<decimal>(context.Table, row.Value);
+                    break;
+                case DataRowCreationMethod.FromTable:
+                    dataRow = context.Table.Row[row.Value];
+                    break;
+                default:
+                    throw new InvalidOperationException($"Data Creation Method {creationMethod} not found");
+            }
+
+            return new DataRowContext
+            {
+                Context = context,
+                Row = dataRow,
+                Index = row.Value
+            };
+        }
     }
 
     public class TestDataContext
     {
         public DataTable Table { get; set; }
         public List<List<decimal>> TestData { get; set; }
+    }
+
+    public class DataRowContext
+    {
+        public TestDataContext Context { get; set; }
+        public DataRow<decimal> Row { get; set; }
+        public int Index { get; set; }
     }
 }

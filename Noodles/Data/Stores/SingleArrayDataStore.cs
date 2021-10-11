@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Noodles.Data.Indexers;
 using Noodles.Exceptions;
 using Noodles.Extensions;
 
-namespace Noodles.ML.Data.Stores
+namespace Noodles.Data.Stores
 {
     public class SingleArrayDataStore<T> : IDataStore<T>
     {
@@ -22,6 +23,11 @@ namespace Noodles.ML.Data.Stores
 
             if (ColumnCount > 0) InitializeData();
             _allocatedRowSpace = initialRowCount;
+
+            Row = new SingleArrayRowDataIndexer<T>(
+                this,
+                (index) => _data[index],
+                (index, value) => _data[index] = value);
         }
 
         private void InitializeData()
@@ -81,5 +87,9 @@ namespace Noodles.ML.Data.Stores
                 _data[((row * ColumnCount)) + column] = value;
             }
         }
+
+        public IIndexer<T, IEnumerable<T>> Row { get; private set; }
+
+        public IIndexer<T, IEnumerable<T>> Column { get; private set; }
     }
 }
