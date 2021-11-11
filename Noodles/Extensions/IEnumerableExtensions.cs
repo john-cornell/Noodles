@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 
 namespace Noodles.Extensions
 {
@@ -23,11 +22,25 @@ namespace Noodles.Extensions
         public static void Index<T>(this IEnumerable<T> me, Action<int, T> indexAndValueAction)
         {
             int index = 0;
-            foreach(T item in me)
+            foreach (T item in me)
             {
                 indexAndValueAction(index, item);
                 index++;
             }
+        }
+
+        //https://stackoverflow.com/questions/1290603/how-to-get-the-index-of-an-element-in-an-ienumerable
+        //Mark Gravell
+        public static int IndexOf<T>(this IEnumerable<T> me, T value)
+        {
+            int index = 0;
+            var comparer = EqualityComparer<T>.Default; // or pass in as a parameter
+            foreach (T item in me)
+            {
+                if (comparer.Equals(item, value)) return index;
+                index++;
+            }
+            return -1;
         }
 
         public static T RandomElementUsing<T>(this IEnumerable<T> enumerable, Random rand)

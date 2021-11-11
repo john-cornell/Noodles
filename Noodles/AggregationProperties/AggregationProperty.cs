@@ -1,6 +1,6 @@
-﻿using Noodles.MeansCalculations;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Noodles.MeansCalculations;
 
 namespace Noodles.AggregationProperties
 {
@@ -13,7 +13,7 @@ namespace Noodles.AggregationProperties
             Symmetry_Cycle = 1L << 2,
         }
 
-        public abstract bool Test(IEnumerable<float> values, IMeanCalculator calculator, AggregationTestTypes method = AggregationTestTypes.Default);
-        public bool Test(IEnumerable<int> values, IMeanCalculator calculator, AggregationTestTypes method = AggregationTestTypes.Default) => Test(values.Select(v => (float)v), calculator, method);
+        public abstract bool Test(IEnumerable<decimal> values, IMeanCalculator calculator, AggregationTestTypes method = AggregationTestTypes.Default);
+        public bool Test(IEnumerable<int> values, IMeanCalculator calculator, AggregationTestTypes method = AggregationTestTypes.Default) => Test(values.Select(v => (decimal)v), calculator, method);
     }
 }

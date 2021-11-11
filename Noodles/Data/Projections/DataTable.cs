@@ -6,26 +6,52 @@ using Noodles.Exceptions;
 
 namespace Noodles.Data.Projections
 {
-    public class DataTable : DataTable<decimal>
+    public class DataTable : DataTable<object>
     {
         public DataTable() : this(0)
         {
-            Row = new DataRowIndexer<decimal>(Data);
+            Row = new DataRowIndexer<object>(Data);
         }
 
         public DataTable(
             int columnCount,
             int initialRowCount = 1000,
-            DataStoreType dataStoreType = DataStoreType.SingleArray) : base(columnCount, initialRowCount, dataStoreType)
+            IEnumerable<string> headers = null,
+            DataStoreType dataStoreType = DataStoreType.SingleArray) : base(columnCount, initialRowCount, headers: headers, dataStoreType: dataStoreType)
         {
 
         }
 
-        public DataTable(IDataStore<decimal> data) : base(data) { }
+        public DataTable(string url, bool firstRowIsHeader = true, DataStoreType dataStoreType = DataStoreType.SingleArray, bool testForNumeric = true) : base(0, dataStoreType: dataStoreType)
+        {
+            DataTableUrlLoader.LoadData(this, url, firstRowIsHeader, testForNumeric);
+        }
+
+        public DataTable(IDataStore<object> data) : base(data) { }
+
+        public IEnumerable<T> GetColumn<T>(int index) => Column[index].Cast<T>();
+        public IEnumerable<T> GetRow<T>(int index) => Row[index].Cast<T>();
+
+        public IEnumerable<IEnumerable<object>> Rows() => Rows<object>();
+        public IEnumerable<IEnumerable<object>> Columns() => Rows<object>();
+
+        public IEnumerable<IEnumerable<T>> Rows<T>()
+        {
+            for (int i = 0; i < RowCount; i++) yield return GetRow<T>(i).Select(datum => datum);
+        }
+
+        public IEnumerable<IEnumerable<T>> Columns<T>()
+        {
+            for (int i = 0; i < RowCount; i++) yield return GetColumn<T>(i);
+        }
+
+        public bool IsColumnUniqueType(int index) => Column[index].Select(d => d.GetType()).Distinct().Count() == 1;
     }
 
     public class DataTable<T> : Projection<T>
     {
+        public List<string> Headers { get; set; }
+
         public DataTable() : this(0)
         {
 
@@ -34,13 +60,17 @@ namespace Noodles.Data.Projections
         public DataTable(
             int columnCount,
             int initialRowCount = 1000,
-            DataStoreType dataStoreType = DataStoreType.SingleArray) : base(columnCount, initialRowCount, dataStoreType)
+            IEnumerable<string> headers = null,
+            DataStoreType dataStoreType = DataStoreType.SingleArray) : base(columnCount, initialRowCount, dataStoreType, headers: headers)
         {
+            Column = new DataColumnIndexer<T>(Data);
             Row = new DataRowIndexer<T>(Data);
+            Headers = headers?.ToList();
         }
 
-        public DataTable(IDataStore<T> data) : base(data)
+        public DataTable(IDataStore<T> data, DataStoreType dataStoreType = DataStoreType.SingleArray) : base(data)
         {
+            Column = new DataColumnIndexer<T>(Data);
             Row = new DataRowIndexer<T>(Data);
         }
 
@@ -66,7 +96,11 @@ namespace Noodles.Data.Projections
             Data.Add(data);
         }
 
-        public IIndexer<T, DataRow<T>> Row { get; protected set; }
+        public IIndexer<T, IEnumerable<T>> Column { get; protected set; }
+        public IIndexer<T, IEnumerable<T>> Row { get; protected set; }
+
+        public DataColumn<T> GetDataColumn(int columnIndex) => new DataColumn<T>(Data, columnIndex);
+        public DataRow<T> GetDataRow(int rowIndex) => new DataRow<T>(Data, rowIndex);
 
         private void AssertColumnCount(IEnumerable<T> row)
         {

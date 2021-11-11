@@ -16,5 +16,7 @@ namespace Noodles.Data
 
         IIndexer<T, IEnumerable<T>> Column { get; }
         IIndexer<T, IEnumerable<T>> Row { get; }
+
+        internal void ExpandToColumn(int column, int minRowSize);
     }
 }

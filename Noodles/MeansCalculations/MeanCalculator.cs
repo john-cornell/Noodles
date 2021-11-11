@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Noodles.MeansCalculations
 {
     public abstract class MeanCalculator : IMeanCalculator
     {
-        public float Calculate(IEnumerable<float> values)
+        public decimal Calculate(IEnumerable<decimal> values)
         {
             if (values == null) throw new ArgumentNullException("values");
 
@@ -16,17 +15,15 @@ namespace Noodles.MeansCalculations
             return InternalCalculate(values);
         }
 
-        protected abstract float InternalCalculate(IEnumerable<float> values);
+        protected abstract decimal InternalCalculate(IEnumerable<decimal> values);
 
-        public float Calculate(IEnumerable<int> values)
+        public decimal Calculate(IEnumerable<int> values)
         {
             if (values == null) throw new ArgumentNullException("values");
 
             if (values.Count() == 0) return 0;
 
-            return Calculate(values.Select(i => (float)i));
+            return Calculate(values.Select(i => (decimal)i));
         }
-
-        //Yucky brute force - lack of decimal 
     }
 }

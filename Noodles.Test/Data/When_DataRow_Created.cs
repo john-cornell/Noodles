@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Noodles.Data.Projections;
 using Noodles.Data.Stores;
 using Noodles.Test.Utilities;
 
@@ -10,7 +9,7 @@ namespace Noodles.Test
     public enum DataRowCreationMethod { FromCtorWithProjection, FromCtorWithDataStore, FromTable }
 
     [TestClass]
-    public class When_DataRow_IsCreated
+    public class When_DataRow_Created
     {
         RandomProvider _random;
         DataProvider _data;

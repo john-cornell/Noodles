@@ -1,6 +1,5 @@
-﻿using Noodles.MeansCalculations;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Noodles.MeansCalculations;
 
 namespace Noodles
 {
@@ -18,16 +17,16 @@ namespace Noodles
             _median = new MedianCalculator();
         }
 
-        public float Arithmetic(IEnumerable<int> values) => _arithmetic.Calculate(values);
-        public float Arithmetic(IEnumerable<float> values) => _arithmetic.Calculate(values);
+        public decimal Arithmetic(IEnumerable<int> values) => _arithmetic.Calculate(values);
+        public decimal Arithmetic(IEnumerable<decimal> values) => _arithmetic.Calculate(values);
 
-        public float Geometric(IEnumerable<int> values) => _geometric.Calculate(values);
-        public float Geometric(IEnumerable<float> values) => _geometric.Calculate(values);
+        public decimal Geometric(IEnumerable<int> values) => _geometric.Calculate(values);
+        public decimal Geometric(IEnumerable<decimal> values) => _geometric.Calculate(values);
 
-        public float Harmonic(IEnumerable<int> values) => _harmonic.Calculate(values);
-        public float Harmonic(IEnumerable<float> values) => _harmonic.Calculate(values);
+        public decimal Harmonic(IEnumerable<int> values) => _harmonic.Calculate(values);
+        public decimal Harmonic(IEnumerable<decimal> values) => _harmonic.Calculate(values);
 
-        public float Median(IEnumerable<int> values) => _median.Calculate(values);
-        public float Median(IEnumerable<float> values) => _median.Calculate(values);
+        public decimal Median(IEnumerable<int> values) => _median.Calculate(values);
+        public decimal Median(IEnumerable<decimal> values) => _median.Calculate(values);
     }
 }

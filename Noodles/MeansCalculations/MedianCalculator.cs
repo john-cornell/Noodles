@@ -7,7 +7,7 @@ namespace Noodles.MeansCalculations
 {
     public class MedianCalculator : MeanCalculator
     {
-        protected override float InternalCalculate(IEnumerable<float> values)
+        protected override decimal InternalCalculate(IEnumerable<decimal> values)
         {
             int count = values.Count();
             int mid = count / 2; //int calculation, so if even, will return Floor value (remove 0.5)

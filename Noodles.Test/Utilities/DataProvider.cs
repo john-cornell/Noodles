@@ -6,7 +6,7 @@ using Noodles.Data.Stores;
 
 namespace Noodles.Test.Utilities
 {
-    public enum DataLoadStrategy { EnumOfEnum, RowByRow, Params }
+    public enum DataLoadStrategy { EnumOfEnum, RowByRow, Params, ByDataRows, ByDataColumns }
 
     public class DataProvider
     {
@@ -29,12 +29,53 @@ namespace Noodles.Test.Utilities
             return testData;
         }
 
-        public TestDataContext GetTestDataContext(DataStoreType dataStoreType, DataLoadStrategy strategy)
+        public List<List<object>> GetObjectData(int columns, int rows, Func<int, bool> isNumericColumn)
         {
-            DataTable table = new DataTable(0, dataStoreType: dataStoreType);
+            List<List<object>> data = new List<List<object>>();
 
-            List<List<decimal>> testData = GetTableListData();
+            for (int i = 0; i < rows; i++)
+            {
+                List<object> row = new List<object>();
+                data.Add(row);
 
+                for (int j = 0; j < columns; j++)
+                {
+                    if (isNumericColumn(j))
+                        row.Add(_random.GetRandomDecimal());
+                    else
+                        row.Add(_random.GetRandomWord());
+                }
+            }
+
+            return data;
+        }
+
+        public TestDataContext GetTestDataContext(DataStoreType dataStoreType, DataLoadStrategy strategy, int? rows = null, int? columns = null)
+        {
+            List<List<decimal>> testData = GetTableListData(columns: columns ?? 0, rows: rows ?? 0);
+
+            DataTable<decimal> table = GetNewTable(dataStoreType, strategy, testData.First().Count);
+
+            testData = LoadData(table, testData, strategy);
+
+            return new TestDataContext
+            {
+                Table = table,
+                TestData = testData
+            };
+        }
+
+        private static DataTable<decimal> GetNewTable(DataStoreType dataStoreType, DataLoadStrategy strategy, int columnSize)
+        {
+            return new DataTable<decimal>(
+                            strategy == DataLoadStrategy.ByDataColumns ||
+                            strategy == DataLoadStrategy.ByDataRows
+                            ? columnSize : 0,
+                            dataStoreType: dataStoreType);
+        }
+
+        public List<List<decimal>> LoadData(DataTable<decimal> table, List<List<decimal>> testData, DataLoadStrategy strategy)
+        {
             switch (strategy)
             {
                 case DataLoadStrategy.EnumOfEnum:
@@ -55,15 +96,40 @@ namespace Noodles.Test.Utilities
                         testData[4].ToArray()
                         );
                     break;
+                case DataLoadStrategy.ByDataRows:
+
+                    for (int i = 0; i < testData.Count; i++)
+                    {
+                        table.Row[i] = testData[i];
+                    }
+
+                    break;
+                case DataLoadStrategy.ByDataColumns:
+
+                    List<List<decimal>> pivoted = new List<List<decimal>>();
+
+                    for (int j = 0; j < testData[0].Count; j++)
+                    {
+                        pivoted.Add(new List<decimal>());
+
+                        foreach (List<decimal> row in testData)
+                        {
+                            pivoted[j].Add(row[j]);
+                        }
+                    }
+
+                    for (int i = 0; i < pivoted.Count; i++)
+                    {
+                        table.Column[i] = pivoted[i];
+                    }
+
+                    break;
+
                 default:
                     break;
             }
 
-            return new TestDataContext
-            {
-                Table = table,
-                TestData = testData
-            };
+            return testData;
         }
 
         public DataRowContext GetDataRowContext(
@@ -86,7 +152,7 @@ namespace Noodles.Test.Utilities
                     dataRow = new DataRow<decimal>(context.Table, row.Value);
                     break;
                 case DataRowCreationMethod.FromTable:
-                    dataRow = context.Table.Row[row.Value];
+                    dataRow = context.Table.GetDataRow(row.Value);
                     break;
                 default:
                     throw new InvalidOperationException($"Data Creation Method {creationMethod} not found");
@@ -99,11 +165,44 @@ namespace Noodles.Test.Utilities
                 Index = row.Value
             };
         }
+        public DataColumnContext GetDataColumnContext(
+        DataStoreType dataStoreType,
+        DataLoadStrategy dataLoadStrategy,
+        DataColumnCreationMethod creationMethod, int? column = null)
+        {
+            TestDataContext context = GetTestDataContext(dataStoreType, dataLoadStrategy);
+
+            if (!column.HasValue) column = _random.GetRandomInt(0, context.Table.ColumnCount);
+
+            DataColumn<decimal> dataColumn;
+
+            switch (creationMethod)
+            {
+                case DataColumnCreationMethod.FromCtorWithDataStore:
+                    dataColumn = new DataColumn<decimal>(context.Table.Data, column.Value);
+                    break;
+                case DataColumnCreationMethod.FromCtorWithProjection:
+                    dataColumn = new DataColumn<decimal>(context.Table, column.Value);
+                    break;
+                case DataColumnCreationMethod.FromTable:
+                    dataColumn = context.Table.GetDataColumn(column.Value);
+                    break;
+                default:
+                    throw new InvalidOperationException($"Data Creation Method {creationMethod} not found");
+            }
+
+            return new DataColumnContext
+            {
+                Column = dataColumn,
+                Context = context,
+                Index = column.Value
+            };
+        }
     }
 
     public class TestDataContext
     {
-        public DataTable Table { get; set; }
+        public DataTable<decimal> Table { get; set; }
         public List<List<decimal>> TestData { get; set; }
     }
 
@@ -113,4 +212,12 @@ namespace Noodles.Test.Utilities
         public DataRow<decimal> Row { get; set; }
         public int Index { get; set; }
     }
+
+    public class DataColumnContext
+    {
+        public TestDataContext Context { get; set; }
+        public DataColumn<decimal> Column { get; set; }
+        public int Index { get; set; }
+    }
+
 }

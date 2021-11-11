@@ -9,9 +9,9 @@ namespace Noodles.Test.Utilities
 {
     public class PositionallyWeightedAggregation : MeanCalculator
     {
-        protected override float InternalCalculate(IEnumerable<float> values)
+        protected override decimal InternalCalculate(IEnumerable<decimal> values)
         {
-            float result = 0;
+            decimal result = 0;
             int n = values.Count();
 
             values.Index((i, v) => 

@@ -4,7 +4,7 @@ namespace Noodles.MeansCalculations
 {
     public interface IMeanCalculator
     {
-        float Calculate(IEnumerable<float> values);
-        float Calculate(IEnumerable<int> values);
+        decimal Calculate(IEnumerable<decimal> values);
+        decimal Calculate(IEnumerable<int> values);
     }
 }

@@ -1,17 +1,47 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
+using Newtonsoft.Json;
 
 namespace Noodles.Test.ExtensionTests
 {
     public static class ObjectExtensions
     {
+        //https://stackoverflow.com/questions/1130698/checking-if-an-object-is-a-number-in-c-sharp
+        //Is Number = Noldorin
+        //IsNumeric = Scott Hanselman
+        public static bool IsNumber(this object value)
+        {
+            return value is sbyte
+                    || value is byte
+                    || value is short
+                    || value is ushort
+                    || value is int
+                    || value is uint
+                    || value is long
+                    || value is ulong
+                    || value is float
+                    || value is double
+                    || value is decimal;
+        }
+
+        public static bool IsNumeric(this object me)
+        {
+            if (me == null)
+                return false;
+
+            return Double.TryParse(Convert.ToString(me
+                                                    , CultureInfo.InvariantCulture)
+                                  , System.Globalization.NumberStyles.Any
+                                  , NumberFormatInfo.InvariantInfo
+                                  , out double number);
+        }
+
         public static T[] AsSingleItemArray<T>(this T item)
         {
             return item.Yield().ToArray();

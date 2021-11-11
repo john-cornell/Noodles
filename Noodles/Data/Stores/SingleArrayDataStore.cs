@@ -13,7 +13,8 @@ namespace Noodles.Data.Stores
         int _initialRowCount = 0;
         T[] _data;
 
-        int _allocatedRowSpace;
+        decimal _growthPercentage = 1.5m;
+
         int _columnCount;
 
         public SingleArrayDataStore(int columnCount, int initialRowCount)
@@ -22,9 +23,13 @@ namespace Noodles.Data.Stores
             _initialRowCount = initialRowCount;
 
             if (ColumnCount > 0) InitializeData();
-            _allocatedRowSpace = initialRowCount;
 
             Row = new SingleArrayRowDataIndexer<T>(
+                this,
+                (index) => _data[index],
+                (index, value) => _data[index] = value);
+
+            Column = new SingleArrayColumnDataIndexer<T>(
                 this,
                 (index) => _data[index],
                 (index, value) => _data[index] = value);
@@ -47,7 +52,7 @@ namespace Noodles.Data.Stores
             }
         }
 
-        public int RowCount => _dataLength == 0 ? 0 : _dataLength / ColumnCount;
+        public int RowCount => _dataLength == 0 ? 0 : ((_dataLength) / ColumnCount);
 
         public void Add(IEnumerable<IEnumerable<T>> data)
         {
@@ -70,8 +75,83 @@ namespace Noodles.Data.Stores
             }
 
             T[] array = row.ToArray();
+            int newDataLength = _dataLength + array.Length;
+
+            if (newDataLength > _data.Length)
+            {
+                Grow(minimumGrowth: newDataLength);//already handles position != slot count problem, in Grow call below, so no need to +1
+            }
+
             Array.Copy(array, 0, _data, _dataLength, array.Length);
-            _dataLength += array.Length;
+
+            _dataLength = newDataLength;
+        }
+
+        private void Grow(int minimumGrowth)
+        {
+            T[] newData = GenerateEmptyDataStore(minimumGrowth);
+
+            Array.Copy(_data, 0, newData, 0, _data.Length);
+            _data = newData;
+        }
+
+        private T[] GenerateEmptyDataStore(int minimumGrowth)
+        {
+            return new T[
+                            Math.Max(
+                                ExpandToNextRowSize(minimumGrowth),
+                                ExpandToNextRowSize((int)((_data.Length) * _growthPercentage))
+                                )];
+        }
+
+        //Account for whole row if minimum growth at part of row only, so Row Count isn't mucked up for incomplete rows
+        private int ExpandToNextRowSize(int minimumGrowth)
+        {
+            int mod = ColumnCount == 0 ? minimumGrowth : minimumGrowth % ColumnCount;
+
+            return minimumGrowth + (ColumnCount - mod);
+        }
+
+        void IDataStore<T>.ExpandToColumn(int requiredColumnIndex, int minRowSize)
+        {
+            int column = requiredColumnIndex + 1;//column input is index, so 0 based, we want actual number
+
+            try
+            {
+                if (_data == null)
+                {
+                    _initialRowCount = minRowSize;
+                    _columnCount = column;
+                    InitializeData();
+
+                    return;
+                }
+
+                int currentColumnCount = ColumnCount;
+                int rowSize = Math.Max(minRowSize, RowCount);
+
+                int minimumSize = Math.Max(column, column * rowSize);
+
+                T[] nextDataStore = GenerateEmptyDataStore(minimumSize);
+
+                int index = 0;
+                int columnIdx = 0;
+
+                for (int i = 0; i < RowCount; i++)
+                {
+                    for (int j = 0; j < ColumnCount; j++)
+                    {
+                        nextDataStore[(i * column) + j] = this[i, j];
+                    }
+                }
+
+                _dataLength = RowCount * column;
+                _data = nextDataStore;
+            }
+            finally
+            {
+                _columnCount = column;
+            }
         }
 
         public T this[int row, int column]
@@ -84,7 +164,19 @@ namespace Noodles.Data.Stores
             }
             set
             {
-                _data[((row * ColumnCount)) + column] = value;
+                int position = ((row * ColumnCount)) + column;
+
+                if (position >= _data.Length)
+                {
+                    Grow(minimumGrowth: position + 1);//zero based indexing means position n requires n + 1 slots, e.g. position 0 needs 1 slot
+                }
+
+                _data[position] = value;
+
+                if (position >= _dataLength)//data was inserted after current _datalength, so expand
+                {
+                    _dataLength = ExpandToNextRowSize(position);//Growth should have ensured this position is valid
+                }
             }
         }
 

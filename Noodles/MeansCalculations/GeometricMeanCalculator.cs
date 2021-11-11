@@ -8,17 +8,17 @@ namespace Noodles.MeansCalculations
     public class GeometricMeanCalculator : MeanCalculator
     {
 
-        protected override float InternalCalculate(IEnumerable<float> values)
+        protected decimal InternalCalculatex(IEnumerable<decimal> values)
         {
             REngine.SetEnvironmentVariables();
             //using (REngine engine = REngine.GetInstance())
             throw new NotImplementedException();
         }
-        protected float InternalCalculatex(IEnumerable<float> values)
+        protected override decimal InternalCalculate(IEnumerable<decimal> values)
         {
-            float product = values.Select(i => (float)i).Aggregate((acc, val) => ((float)acc * (float)val));
+            decimal product = values.Select(i => (decimal)i).Aggregate((acc, val) => ((decimal)acc * (decimal)val));
 
-            return MathF.Pow(product, 1f / (float)values.Count());
+            return (decimal)Math.Pow((double)product, (double)(1m / (decimal)values.Count()));
         }
     }
 }
