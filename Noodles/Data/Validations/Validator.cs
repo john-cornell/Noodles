@@ -7,9 +7,14 @@ namespace Noodles.Data.Validations
 {
     public enum ValidationType
     {
+
+        Unknown = 0,
+
         AllNumeric = 1 << 0,
         RowsContainDistinctDataTypes = 1 << 1,
-        AllDataDistinctType = 1 << 2
+        AllDataDistinctType = 1 << 2,
+
+        DecisionTree = 1 << 42,
     }
 
     public class Validator
@@ -29,6 +34,8 @@ namespace Noodles.Data.Validations
             {
                 if ((types & validator.ValidationType) > 0)
                 {
+
+
                     validator.Validate(table, context);
                     validationFound = true;
                 }
@@ -45,6 +52,7 @@ namespace Noodles.Data.Validations
             Add<Validation_AllNumeric>();
             Add<Validation_RowsContainDistinctDataTypes>();
             Add<Validation_AllDataDistinct>();
+            Add<Validation_DecisionTree>();
         }
 
         private void Add<T>() where T : Validation

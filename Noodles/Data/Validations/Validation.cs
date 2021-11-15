@@ -17,6 +17,7 @@ namespace Noodles.Data.Validations
         public void Validate(DataTable dataTable, ValidationContext context)
         {
             Context = context;
+            Validate(dataTable);
         }
 
         protected abstract void Validate(DataTable dataTable);

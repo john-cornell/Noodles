@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Noodles.Data.Projections;
 using Noodles.Data.Stores;
 using Noodles.Data.Validations;
+using Noodles.Data.Validations.Context;
 using Noodles.Exceptions;
 using Noodles.Test.Utilities;
 
@@ -202,7 +203,7 @@ namespace Noodles.Test
         {
             DataTable table = new DataTable(0, dataStoreType: dataStoreType);
 
-            List<string> column0 = _random.GetRandomDecimals(100).Select(d=>d.ToString()).ToList();
+            List<string> column0 = _random.GetRandomDecimals(100).Select(d => d.ToString()).ToList();
             List<string> column1 = _random.GetRandomInts(100).Select(i => i.ToString()).ToList();
             List<string> column2 = _random.GetRandomWords(4322).ToList();
             List<string> column3 = _random.GetRandomWords(432).ToList();
@@ -222,5 +223,30 @@ namespace Noodles.Test
 
             _validator.Validate(table, ValidationType.AllDataDistinctType);
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(NullValidationContextException))]
+        public void Should_fail_validation_when_context_required_but_not_given()
+        {
+            Validation_DecisionTree validator = new Validation_DecisionTree();
+            validator.Validate(new DataTable(), null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(IncorrectValidationContextException))]
+        public void Should_fail_validation_when_incorrect_context_given()
+        {
+            Validation_DecisionTree validator = new Validation_DecisionTree();
+            validator.Validate(new DataTable(), new Unknown_Context());
+        }
     }
+
+    class Unknown_Context : ValidationContext
+    {
+        public Unknown_Context() : base(ValidationType.Unknown)
+        {
+
+        }
+    }
+
 }
