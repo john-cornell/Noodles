@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Noodles.Data.Stores;
 
 namespace Noodles.Data.Projections
 {
     public class DataRow<T> : Projection<T>, IEnumerable<T>
     {
-        private SingleArrayDataStore<decimal> singleArrayDataStore;
-
         public int RowIndex { get; private set; }
 
         public DataRow(Projection<T> data, int rowIndex) : this(data.Data, rowIndex) { }

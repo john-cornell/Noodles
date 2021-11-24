@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Noodles.Data.Stores;
 using Noodles.Test.Utilities;
 
-namespace Noodles.Test
+namespace Noodles.Test.Data
 {
     public enum DataRowCreationMethod { FromCtorWithProjection, FromCtorWithDataStore, FromTable }
 

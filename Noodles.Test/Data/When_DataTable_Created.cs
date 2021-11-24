@@ -3,7 +3,7 @@ using Noodles.Data.Projections;
 using Noodles.Data.Stores;
 using Noodles.Exceptions;
 
-namespace Noodles.Test
+namespace Noodles.Test.Data
 {
     [TestClass]
     public class When_DataTable_Created

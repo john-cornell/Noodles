@@ -8,7 +8,8 @@ namespace Noodles.Data
 {
     public abstract class Projection<T>
     {
-        public string[] Headers { get; private set; }
+        public string[] Headers { get; set; }
+
         public IDataStore<T> Data { get; private set; }
 
         public Projection(IDataStore<T> data, IEnumerable<string> headers = null)

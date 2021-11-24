@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Noodles.Data.Projections;
 using Noodles.Data.Stores;
+using Noodles.Test.Data;
 
 namespace Noodles.Test.Utilities
 {
@@ -10,7 +11,7 @@ namespace Noodles.Test.Utilities
 
     public class DataProvider
     {
-        RandomProvider _random;
+        readonly RandomProvider _random;
 
         public DataProvider()
         {
@@ -141,22 +142,13 @@ namespace Noodles.Test.Utilities
 
             if (!row.HasValue) row = _random.GetRandomInt(0, context.Table.RowCount);
 
-            DataRow<decimal> dataRow;
-
-            switch (creationMethod)
+            DataRow<decimal> dataRow = creationMethod switch
             {
-                case DataRowCreationMethod.FromCtorWithDataStore:
-                    dataRow = new DataRow<decimal>(context.Table.Data, row.Value);
-                    break;
-                case DataRowCreationMethod.FromCtorWithProjection:
-                    dataRow = new DataRow<decimal>(context.Table, row.Value);
-                    break;
-                case DataRowCreationMethod.FromTable:
-                    dataRow = context.Table.GetDataRow(row.Value);
-                    break;
-                default:
-                    throw new InvalidOperationException($"Data Creation Method {creationMethod} not found");
-            }
+                DataRowCreationMethod.FromCtorWithDataStore => new DataRow<decimal>(context.Table.Data, row.Value),
+                DataRowCreationMethod.FromCtorWithProjection => new DataRow<decimal>(context.Table, row.Value),
+                DataRowCreationMethod.FromTable => context.Table.GetDataRow(row.Value),
+                _ => throw new InvalidOperationException($"Data Creation Method {creationMethod} not found"),
+            };
 
             return new DataRowContext
             {
@@ -174,22 +166,13 @@ namespace Noodles.Test.Utilities
 
             if (!column.HasValue) column = _random.GetRandomInt(0, context.Table.ColumnCount);
 
-            DataColumn<decimal> dataColumn;
-
-            switch (creationMethod)
+            DataColumn<decimal> dataColumn = creationMethod switch
             {
-                case DataColumnCreationMethod.FromCtorWithDataStore:
-                    dataColumn = new DataColumn<decimal>(context.Table.Data, column.Value);
-                    break;
-                case DataColumnCreationMethod.FromCtorWithProjection:
-                    dataColumn = new DataColumn<decimal>(context.Table, column.Value);
-                    break;
-                case DataColumnCreationMethod.FromTable:
-                    dataColumn = context.Table.GetDataColumn(column.Value);
-                    break;
-                default:
-                    throw new InvalidOperationException($"Data Creation Method {creationMethod} not found");
-            }
+                DataColumnCreationMethod.FromCtorWithDataStore => new DataColumn<decimal>(context.Table.Data, column.Value),
+                DataColumnCreationMethod.FromCtorWithProjection => new DataColumn<decimal>(context.Table, column.Value),
+                DataColumnCreationMethod.FromTable => context.Table.GetDataColumn(column.Value),
+                _ => throw new InvalidOperationException($"Data Creation Method {creationMethod} not found"),
+            };
 
             return new DataColumnContext
             {

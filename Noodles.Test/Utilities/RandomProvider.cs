@@ -6,7 +6,7 @@ namespace Noodles.Test.Utilities
 {
     public class RandomProvider
     {
-        Random _random;
+        private readonly Random _random;
         List<string> _words = new List<string>();
 
         public RandomProvider()
@@ -48,6 +48,13 @@ namespace Noodles.Test.Utilities
         public IEnumerable<string> GetRandomWords(int length)
         {
             for (int i = 0; i < length; i++) yield return GetRandomWord();
+        }
+
+        internal bool GetRandomBool() => GetRandomInt(0, 2) == 1;
+
+        internal IEnumerable<bool> GetRandomBools(int length)
+        {
+            for (int i = 0; i < length; i++) yield return GetRandomBool();
         }
     }
 }

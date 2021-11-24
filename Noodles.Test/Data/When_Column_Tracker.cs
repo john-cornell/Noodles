@@ -5,7 +5,7 @@ using Noodles.Data.Stores;
 using Noodles.ML.Classification.DecisionTree;
 using Noodles.Test.Utilities;
 
-namespace Noodles.Test
+namespace Noodles.Test.Data
 {
     [TestClass]
     public class When_Column_Tracker

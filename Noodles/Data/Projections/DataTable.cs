@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Noodles.Data.Indexers;
+using Noodles.Data.Selectors;
 using Noodles.Data.Stores;
+using Noodles.Data.Transformations;
 using Noodles.Exceptions;
 
 namespace Noodles.Data.Projections
@@ -33,16 +36,36 @@ namespace Noodles.Data.Projections
         public IEnumerable<T> GetRow<T>(int index) => Row[index].Cast<T>();
 
         public IEnumerable<IEnumerable<object>> Rows() => Rows<object>();
-        public IEnumerable<IEnumerable<object>> Columns() => Rows<object>();
+        public IEnumerable<IEnumerable<object>> Columns() => Columns<object>();
 
         public IEnumerable<IEnumerable<T>> Rows<T>()
         {
             for (int i = 0; i < RowCount; i++) yield return GetRow<T>(i).Select(datum => datum);
         }
 
+        public void TransformToColumn<TInput, TOutput>(string sourceColumn, string destinationColumn, BaseTransformation<TInput, TOutput> transformer)
+        {
+            Column[destinationColumn] = Column[sourceColumn].Select(d => (object)transformer.ObjectTransform(d));
+        }
+
         public IEnumerable<IEnumerable<T>> Columns<T>()
         {
-            for (int i = 0; i < RowCount; i++) yield return GetColumn<T>(i);
+            for (int i = 0; i < ColumnCount; i++) yield return GetColumn<T>(i);
+        }
+
+        public void TransformColumn<TInput, TOutput>(string columnName, BaseTransformation<TInput, TOutput> transformer)
+        {
+            TransformColumn(ColumnSelector.GetColumnIndex(columnName), transformer);
+        }
+
+        public void TransformColumn<TInput, TOutput>(int index, BaseTransformation<TInput, TOutput> transformer)
+        {
+            Column[index] = Column[index].Select(i => (object)transformer.ObjectTransform(i));
+        }
+
+        public void TransformRow<TInput, TOutput>(int index, BaseTransformation<TInput, TOutput> transformer)
+        {
+            Row[index] = Row[index].Select(i => (object)transformer.ObjectTransform(i));
         }
 
         public bool IsColumnUniqueType(int index) => Column[index].Select(d => d.GetType()).Distinct().Count() == 1;
@@ -50,7 +73,7 @@ namespace Noodles.Data.Projections
 
     public class DataTable<T> : Projection<T>
     {
-        public List<string> Headers { get; set; }
+        protected ColumnSelector<T> ColumnSelector { get; private set; }
 
         public DataTable() : this(0)
         {
@@ -63,14 +86,17 @@ namespace Noodles.Data.Projections
             IEnumerable<string> headers = null,
             DataStoreType dataStoreType = DataStoreType.SingleArray) : base(columnCount, initialRowCount, dataStoreType, headers: headers)
         {
-            Column = new DataColumnIndexer<T>(Data);
+            ColumnSelector = new ColumnSelector<T>(this);
+
+            Column = new DataColumnIndexer<T>(Data, (n) => ColumnSelector.GetColumnIndex(n), n => AddHeader(n));
             Row = new DataRowIndexer<T>(Data);
-            Headers = headers?.ToList();
         }
 
-        public DataTable(IDataStore<T> data, DataStoreType dataStoreType = DataStoreType.SingleArray) : base(data)
+        public DataTable(IDataStore<T> data) : base(data)
         {
-            Column = new DataColumnIndexer<T>(Data);
+            ColumnSelector = new ColumnSelector<T>(this);
+
+            Column = new DataColumnIndexer<T>(Data, (n) => ColumnSelector.GetColumnIndex(n), n => AddHeader(n));
             Row = new DataRowIndexer<T>(Data);
         }
 
@@ -96,7 +122,7 @@ namespace Noodles.Data.Projections
             Data.Add(data);
         }
 
-        public IIndexer<T, IEnumerable<T>> Column { get; protected set; }
+        public INamedIndexer<T, IEnumerable<T>> Column { get; protected set; }
         public IIndexer<T, IEnumerable<T>> Row { get; protected set; }
 
         public DataColumn<T> GetDataColumn(int columnIndex) => new DataColumn<T>(Data, columnIndex);
@@ -114,5 +140,37 @@ namespace Noodles.Data.Projections
 
         public int ColumnCount { get => Data.ColumnCount; set => Data.ColumnCount = value; }
         public int RowCount { get => Data.RowCount; }
+
+        public void AddHeader(string headerName)
+        {
+            string[] headers = Headers;
+
+            Array.Resize(ref headers, Headers.Length + 1);
+
+            headers[^1] = headerName;
+
+            int i = 1;
+            int j = 7;
+            headers[^i] = headerName;
+            Console.WriteLine(headers[1..7]);
+            Console.WriteLine(headers[i..j]);
+            new List<string>().Count();
+            Headers = headers;
+        }
+
+        public void TransformColumn(string columnName, BaseTransformation<T, T> transformer)
+        {
+            TransformColumn(ColumnSelector.GetColumnIndex(columnName), transformer);
+        }
+
+        public void TransformColumn(int index, BaseTransformation<T, T> transformer)
+        {
+            Column[index] = Column[index].Select(i => transformer.Transform(i));
+        }
+
+        public void TransformRow(int index, BaseTransformation<T, T> transformer)
+        {
+            Row[index] = Row[index].Select(i => transformer.Transform(i));
+        }
     }
 }

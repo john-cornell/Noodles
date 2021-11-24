@@ -6,7 +6,7 @@ using Noodles.Data.Projections;
 using Noodles.Data.Stores;
 using Noodles.Test.Utilities;
 
-namespace Noodles.Test
+namespace Noodles.Test.Data
 {
     [TestClass]
     public class When_Data_Added_To_DataStore
@@ -77,6 +77,7 @@ namespace Noodles.Test
         [DataRow(DataStoreType.SingleArray, DataLoadStrategy.ByDataColumns, true, false)]
         [DataRow(DataStoreType.SingleArray, DataLoadStrategy.ByDataColumns, false, true)]
         [ExpectedException(typeof(IndexOutOfRangeException))]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value", Justification = "Testing exception")]
         public void ShouldThrowException_If_NegativeIndexCalled(DataStoreType dataStoreType, DataLoadStrategy dataLoadStrategy,
             bool negativeRow, bool negativeColumn)
         {
@@ -106,6 +107,7 @@ namespace Noodles.Test
         [DataRow(DataStoreType.SingleArray, DataLoadStrategy.ByDataColumns, true, false)]
         [DataRow(DataStoreType.SingleArray, DataLoadStrategy.ByDataColumns, false, true)]
         [ExpectedException(typeof(IndexOutOfRangeException))]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value", Justification = "Testing Exception")]
         public void ShouldThrowException_If_HighIndexCalled(DataStoreType dataStoreType, DataLoadStrategy dataLoadStrategy,
             bool highRow, bool highColumn)
         {
@@ -261,21 +263,21 @@ namespace Noodles.Test
         [DataRow(DataStoreType.SingleArray)]
         public void Should_not_fail_when_loaded_from_url(DataStoreType dataStoreType)
         {
-            DataTable table = new DataTable(DataFileProvider.DiabetesCsv, dataStoreType: dataStoreType);
+            new DataTable(DataFileProvider.DiabetesCsv, dataStoreType: dataStoreType);
         }
 
         [DataTestMethod]
         [DataRow(DataStoreType.SingleArray)]
         public void Should_not_fail_when_loaded_from_url_numeric(DataStoreType dataStoreType)
         {
-            DataTable table = new DataTable(DataFileProvider.DiabetesCsv, dataStoreType: dataStoreType);
+            new DataTable(DataFileProvider.DiabetesCsv, dataStoreType: dataStoreType);
         }
 
         [DataTestMethod]
         [DataRow(DataStoreType.SingleArray)]
         public void Should_not_fail_when_loaded_from_url_object(DataStoreType dataStoreType)
         {
-            DataTable table = new DataTable(DataFileProvider.DiabetesCsv, firstRowIsHeader: true, dataStoreType: dataStoreType, testForNumeric: false);
+            new DataTable(DataFileProvider.DiabetesCsv, firstRowIsHeader: true, dataStoreType: dataStoreType, testForNumeric: false);
         }
 
         [DataTestMethod]

@@ -4,18 +4,16 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Noodles.Data.Projections;
 using Noodles.Test.Utilities;
 
-namespace Noodles.Test
+namespace Noodles.Test.Data
 {
     [TestClass]
     public class When_Data_Added_To_Generic_DataTable
     {
-        RandomProvider _random;
         DataProvider _data;
 
         [TestInitialize]
         public void Initialize()
         {
-            _random = new RandomProvider();
             _data = new DataProvider();
         }
 
@@ -46,7 +44,9 @@ namespace Noodles.Test
                 else
                 {
                     IEnumerable<decimal> columnDecimalData = dataTable.GetColumn<decimal>(i);
+#pragma warning disable CS0183 // 'is' expression's given expression is always of the provided type
                     Assert.IsTrue(columnDecimalData.All(d => d is decimal));
+#pragma warning restore CS0183 // 'is' expression's given expression is always of the provided type
                 }
             }
         }

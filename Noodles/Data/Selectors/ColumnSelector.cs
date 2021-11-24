@@ -19,13 +19,18 @@ namespace Noodles.Data.Selectors
         {
             get
             {
-                int index = DataTable
-                    .Headers
-                    .Select(h => h.ToUpperInvariant())
-                    .IndexOf(columnName.ToUpperInvariant());
+                int index = GetColumnIndex(columnName);
 
                 return this[index];
             }
+        }
+
+        public int GetColumnIndex(string columnName)
+        {
+            return DataTable
+                .Headers
+                .Select(h => h.ToUpperInvariant())
+                .IndexOf(columnName.ToUpperInvariant());
         }
     }
 }

@@ -8,20 +8,18 @@ using Noodles.Data.Validations.Context;
 using Noodles.Exceptions;
 using Noodles.Test.Utilities;
 
-namespace Noodles.Test
+namespace Noodles.Test.Data
 {
     [TestClass]
     public class When_DataTable_Validated
     {
         RandomProvider _random;
-        DataProvider _data;
         Validator _validator;
 
         [TestInitialize]
         public void Initialize()
         {
             _random = new RandomProvider();
-            _data = new DataProvider();
             _validator = new Validator();
         }
 
@@ -224,6 +222,125 @@ namespace Noodles.Test
             _validator.Validate(table, ValidationType.AllDataDistinctType);
         }
 
+        [DataTestMethod]
+        [DataRow(DataStoreType.SingleArray)]
+        public void Should_not_fail_on_bool_label(DataStoreType dataStoreType)
+        {
+            DataTable table = new DataTable(0, dataStoreType: dataStoreType);
+
+            List<string> column0 = _random.GetRandomDecimals(100).Select(d => d.ToString()).ToList();
+            List<string> column1 = _random.GetRandomInts(100).Select(i => i.ToString()).ToList();
+            List<string> column2 = _random.GetRandomWords(4322).ToList();
+            List<string> column3 = _random.GetRandomWords(432).ToList();
+            List<string> column4 = _random.GetRandomWords(62).ToList();
+            List<bool> column5 = _random.GetRandomBools(4322).ToList();
+
+            table.Column[0] = column0.Cast<object>();
+            table.Column[1] = column1.Cast<object>();
+            table.Column[2] = column2.Cast<object>();
+            table.Column[3] = column3.Cast<object>();
+            table.Column[4] = column4.Cast<object>();
+            table.Column[5] = column5.Cast<object>();
+
+            _validator.Validate(table, ValidationType.DecisionTree, new DecisionTreeValidationContext() { });
+        }
+
+        [DataTestMethod]
+        [DataRow(DataStoreType.SingleArray)]
+        public void Should_not_fail_on_int_label(DataStoreType dataStoreType)
+        {
+            DataTable table = new DataTable(0, dataStoreType: dataStoreType);
+
+            List<string> column0 = _random.GetRandomDecimals(100).Select(d => d.ToString()).ToList();
+            List<string> column1 = _random.GetRandomInts(100).Select(i => i.ToString()).ToList();
+            List<string> column2 = _random.GetRandomWords(4322).ToList();
+            List<string> column3 = _random.GetRandomWords(432).ToList();
+            List<string> column4 = _random.GetRandomWords(62).ToList();
+            List<int> column5 = _random.GetRandomInts(4322, 0, 2).ToList();
+
+            table.Column[0] = column0.Cast<object>();
+            table.Column[1] = column1.Cast<object>();
+            table.Column[2] = column2.Cast<object>();
+            table.Column[3] = column3.Cast<object>();
+            table.Column[4] = column4.Cast<object>();
+            table.Column[5] = column5.Cast<object>();
+
+            _validator.Validate(table, ValidationType.DecisionTree, new DecisionTreeValidationContext() { });
+        }
+
+        [DataTestMethod]
+        [DataRow(DataStoreType.SingleArray)]
+        public void Should_not_fail_on_int_label_override_position(DataStoreType dataStoreType)
+        {
+            DataTable table = new DataTable(0, dataStoreType: dataStoreType);
+
+            List<string> column0 = _random.GetRandomDecimals(100).Select(d => d.ToString()).ToList();
+            List<string> column1 = _random.GetRandomInts(100).Select(i => i.ToString()).ToList();
+            List<int> column2 = _random.GetRandomInts(4322, 0, 2).ToList();
+            List<string> column3 = _random.GetRandomWords(4322).ToList();
+            List<string> column4 = _random.GetRandomWords(432).ToList();
+            List<string> column5 = _random.GetRandomWords(62).ToList();
+
+
+            table.Column[0] = column0.Cast<object>();
+            table.Column[1] = column1.Cast<object>();
+            table.Column[2] = column2.Cast<object>();
+            table.Column[3] = column3.Cast<object>();
+            table.Column[4] = column4.Cast<object>();
+            table.Column[5] = column5.Cast<object>();
+
+            _validator.Validate(table, ValidationType.DecisionTree, new DecisionTreeValidationContext() { OverrideLabelColumn = 2 });
+        }
+
+        [DataTestMethod]
+        [DataRow(DataStoreType.SingleArray)]
+        public void Should_not_fail_on_bool_label_override_position(DataStoreType dataStoreType)
+        {
+            DataTable table = new DataTable(0, dataStoreType: dataStoreType);
+
+            List<string> column0 = _random.GetRandomDecimals(100).Select(d => d.ToString()).ToList();
+            List<string> column1 = _random.GetRandomInts(100).Select(i => i.ToString()).ToList();
+            List<bool> column2 = _random.GetRandomBools(4322).ToList();
+            List<string> column3 = _random.GetRandomWords(4322).ToList();
+            List<string> column4 = _random.GetRandomWords(432).ToList();
+            List<string> column5 = _random.GetRandomWords(62).ToList();
+
+
+            table.Column[0] = column0.Cast<object>();
+            table.Column[1] = column1.Cast<object>();
+            table.Column[2] = column2.Cast<object>();
+            table.Column[3] = column3.Cast<object>();
+            table.Column[4] = column4.Cast<object>();
+            table.Column[5] = column5.Cast<object>();
+
+            _validator.Validate(table, ValidationType.DecisionTree, new DecisionTreeValidationContext() { OverrideLabelColumn = 2 });
+        }
+
+        [DataTestMethod]
+        [DataRow(DataStoreType.SingleArray)]
+        [ExpectedException(typeof(ValidationException))]
+        public void Should_fail_on_label_if_not_all_records_covered(DataStoreType dataStoreType)
+        {
+            DataTable table = new DataTable(0, dataStoreType: dataStoreType);
+
+            List<string> column0 = _random.GetRandomDecimals(100).Select(d => d.ToString()).ToList();
+            List<string> column1 = _random.GetRandomInts(100).Select(i => i.ToString()).ToList();
+            List<bool> column2 = _random.GetRandomBools(4321).ToList();
+            List<string> column3 = _random.GetRandomWords(4322).ToList();
+            List<string> column4 = _random.GetRandomWords(432).ToList();
+            List<string> column5 = _random.GetRandomWords(62).ToList();
+
+
+            table.Column[0] = column0.Cast<object>();
+            table.Column[1] = column1.Cast<object>();
+            table.Column[2] = column2.Cast<object>();
+            table.Column[3] = column3.Cast<object>();
+            table.Column[4] = column4.Cast<object>();
+            table.Column[5] = column5.Cast<object>();
+
+            _validator.Validate(table, ValidationType.DecisionTree, new DecisionTreeValidationContext() { OverrideLabelColumn = 2 });
+        }
+
         [TestMethod]
         [ExpectedException(typeof(NullValidationContextException))]
         public void Should_fail_validation_when_context_required_but_not_given()
@@ -238,6 +355,28 @@ namespace Noodles.Test
         {
             Validation_DecisionTree validator = new Validation_DecisionTree();
             validator.Validate(new DataTable(), new Unknown_Context());
+        }
+
+        [DataTestMethod]
+        [DataRow(DataStoreType.SingleArray)]
+        public void Should_not_fail_on_diabetes_data(DataStoreType dataStoreType)
+        {
+            DataTable table = new DataTable(DataFileProvider.DiabetesCsv, dataStoreType: dataStoreType);
+
+            _validator.Validate(table, ValidationType.DecisionTree, new DecisionTreeValidationContext() { });
+
+            Assert.IsTrue(true);
+        }
+
+        [DataTestMethod]
+        [DataRow(DataStoreType.SingleArray)]
+        [ExpectedException(typeof(ValidationException))]
+        public void Should_fail_on_incorrect_label_data(DataStoreType dataStoreType)
+        {
+            Validation_DecisionTree validator = new Validation_DecisionTree();
+            DataTable table = new DataTable(DataFileProvider.DiabetesCsv, dataStoreType: dataStoreType);
+
+            validator.Validate(table, new DecisionTreeValidationContext() { OverrideLabelColumn = 4 });
         }
     }
 

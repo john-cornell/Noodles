@@ -25,7 +25,7 @@ namespace Noodles.Data
 
                 if (firstRowIsHeader)
                 {
-                    dataTable.Headers = rows[0].Split(',').Select(s => s.Trim()).ToList();
+                    dataTable.Headers = rows[0].Split(',').Select(s => s.Trim()).ToArray();
                 }
 
                 foreach (string row in rows.Skip(firstRowIsHeader ? 1 : 0))
