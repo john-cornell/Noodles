@@ -11,13 +11,11 @@ namespace Noodles.Test.Data
     [TestClass]
     public class When_DataRow_Created
     {
-        RandomProvider _random;
         DataProvider _data;
 
         [TestInitialize]
         public void Initialize()
         {
-            _random = new RandomProvider();
             _data = new DataProvider();
         }
 
@@ -34,7 +32,7 @@ namespace Noodles.Test.Data
         [ExpectedException(typeof(IndexOutOfRangeException))]
         public void IfRowIndexIsNegative_ShouldThrowException(DataStoreType dataStoreType, DataLoadStrategy dataLoadStrategy, DataRowCreationMethod creationMethod)
         {
-            DataRowContext context = _data.GetDataRowContext(dataStoreType, dataLoadStrategy, creationMethod, row: -1);
+            _ = _data.GetDataRowContext(dataStoreType, dataLoadStrategy, creationMethod, row: -1);
         }
 
         [DataTestMethod]
@@ -50,7 +48,7 @@ namespace Noodles.Test.Data
         [ExpectedException(typeof(IndexOutOfRangeException))]
         public void IfRowIndexIsTooHigh_ShouldThrowException(DataStoreType dataStoreType, DataLoadStrategy dataLoadStrategy, DataRowCreationMethod creationMethod)
         {
-            DataRowContext context = _data.GetDataRowContext(dataStoreType, dataLoadStrategy, creationMethod, row: 101);
+            _ = _data.GetDataRowContext(dataStoreType, dataLoadStrategy, creationMethod, row: 101);
         }
 
         [DataTestMethod]

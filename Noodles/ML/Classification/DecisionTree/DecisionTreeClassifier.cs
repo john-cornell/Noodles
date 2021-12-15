@@ -1,20 +1,36 @@
-﻿using System;
-using Noodles.Data.Projections;
+﻿using Noodles.Data.Projections;
+using Noodles.Data.Validations;
+using Noodles.Data.Validations.Context;
 
 namespace Noodles.ML.Classification.DecisionTree
 {
     public class DecisionTreeClassifier
     {
-        DataTable _sourceData;
+        private readonly Validator _validator = new Validator();
+        private readonly DataTable _sourceData;
+#pragma warning disable IDE0052 // Remove unread private members
 
-        public DecisionTreeClassifier(DataTable sourceData)
+        private readonly DataSliceTracker _rowTracker;
+        private readonly DataSliceTracker _columnTracker;
+
+#pragma warning restore IDE0052 // Remove unread private members
+
+        public DecisionTreeClassifier(DataTable sourceData, int? labelIndex = null)
         {
-            ValidateData(sourceData);
+            ValidateData(sourceData, labelIndex);
+
+            _sourceData = sourceData;
+
+            _rowTracker = new DataSliceTracker(_sourceData, DataSliceTracker.Slice.Row);
+            _columnTracker = new DataSliceTracker(_sourceData, DataSliceTracker.Slice.Column);
         }
 
-        private void ValidateData(DataTable sourceData)
+        private void ValidateData(DataTable sourceData, int? labelIndex = null)
         {
-            throw new NotImplementedException();
+            _validator.Validate(sourceData, ValidationType.DecisionTree, new DecisionTreeValidationContext
+            {
+                OverrideLabelColumn = labelIndex
+            });
         }
     }
 }

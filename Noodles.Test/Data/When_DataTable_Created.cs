@@ -30,9 +30,10 @@ namespace Noodles.Test.Data
         [DataRow(DataStoreType.SingleArray)]
         public void AndColumnCountUpdatedThroughProperty_ShouldBeSet(DataStoreType dataStoreType)
         {
-            DataTable table = new DataTable(0, dataStoreType: dataStoreType);
-
-            table.ColumnCount = 10;
+            DataTable table = new DataTable(0, dataStoreType: dataStoreType)
+            {
+                ColumnCount = 10
+            };
             Assert.AreEqual(10, table.ColumnCount);
         }
 
@@ -41,7 +42,7 @@ namespace Noodles.Test.Data
         [ExpectedException(typeof(InvalidValueException))]
         public void AndColumnCountSetThroughCtor_Negative_ShouldThrowException(DataStoreType dataStoreType)
         {
-            DataTable table = new DataTable(-2, dataStoreType: dataStoreType);
+            _ = new DataTable(-2, dataStoreType: dataStoreType);
         }
 
         [DataTestMethod]
@@ -71,9 +72,10 @@ namespace Noodles.Test.Data
         [ExpectedException(typeof(ImmutabilityException))]
         public void AndColumnCountSetThroughCtor_ShouldNotBeChangable(DataStoreType dataStoreType)
         {
-            DataTable table = new DataTable(14, dataStoreType: dataStoreType);
-
-            table.ColumnCount = 10;
+            _ = new DataTable(14, dataStoreType: dataStoreType)
+            {
+                ColumnCount = 10
+            };
         }
 
         [DataTestMethod]
@@ -81,9 +83,10 @@ namespace Noodles.Test.Data
         [ExpectedException(typeof(ImmutabilityException))]
         public void AndColumnCountSetThroughProperty_ShouldNotAllowChange(DataStoreType dataStoreType)
         {
-            DataTable table = new DataTable(0, dataStoreType: dataStoreType);
-
-            table.ColumnCount = 10;
+            DataTable table = new DataTable(0, dataStoreType: dataStoreType)
+            {
+                ColumnCount = 10
+            };
             table.ColumnCount = 12;
         }
 
@@ -91,9 +94,7 @@ namespace Noodles.Test.Data
         [DataRow(DataStoreType.SingleArray)]
         public void AndColumnCountSetThroughProperty_ToZero_ShouldBeChangable(DataStoreType dataStoreType)
         {
-            DataTable table = new DataTable(0, dataStoreType: dataStoreType);
-
-            table.ColumnCount = 10;
+            DataTable table = new DataTable(0, dataStoreType: dataStoreType) { ColumnCount = 10 };
 
             Assert.AreEqual(10, table.ColumnCount);
         }
@@ -103,9 +104,10 @@ namespace Noodles.Test.Data
         [ExpectedException(typeof(InvalidValueException))]
         public void AndColumnCountSetThroughProperty_ToNegative_ShouldThrowException(DataStoreType dataStoreType)
         {
-            DataTable table = new DataTable(0, dataStoreType: dataStoreType);
-
-            table.ColumnCount = -10;
+            _ = new DataTable(0, dataStoreType: dataStoreType)
+            {
+                ColumnCount = -10
+            };
         }
 
     }

@@ -68,6 +68,18 @@ namespace Noodles.Data.Projections
             Row[index] = Row[index].Select(i => (object)transformer.ObjectTransform(i));
         }
 
+        public IEnumerable<T> Select<T>(Func<IEnumerable<object>, T> dataSelector) => Rows().Select(r => dataSelector(r));
+
+        public IEnumerable<IEnumerable<object>> Where(Func<IEnumerable<object>, bool> predicate) => Rows().Where(r => predicate(r));
+
+        public IEnumerable<T> Where<T>(Func<IEnumerable<object>, T> dataSelector, Func<T, bool> predicate)
+        {
+            if (predicate == null) throw new ArgumentNullException("predicate");
+            if (dataSelector == null) throw new ArgumentNullException("dataselector");
+
+            return Select(r => dataSelector(r)).Where(predicate);
+        }
+
         public bool IsColumnUniqueType(int index) => Column[index].Select(d => d.GetType()).Distinct().Count() == 1;
     }
 

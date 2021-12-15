@@ -224,7 +224,7 @@ namespace Noodles.Test.Data
 
         [DataTestMethod]
         [DataRow(DataStoreType.SingleArray)]
-        public void Should_not_fail_on_bool_label(DataStoreType dataStoreType)
+        public void Should_not_fail_decision_tree_on_bool_label(DataStoreType dataStoreType)
         {
             DataTable table = new DataTable(0, dataStoreType: dataStoreType);
 

@@ -6,9 +6,9 @@ namespace Noodles.Data.Indexers
 {
     public class SingleArrayRowDataIndexer<T> : IIndexer<T, IEnumerable<T>>
     {
-        IDataStore<T> _data;
-        Func<int, T> _directDataAccessor;
-        Action<int, T> _directDataMutator;
+        readonly IDataStore<T> _data;
+        readonly Func<int, T> _directDataAccessor;
+        readonly Action<int, T> _directDataMutator;
 
         public SingleArrayRowDataIndexer(IDataStore<T> data, Func<int, T> directDataAccessor, Action<int, T> directDataMutator)
         {

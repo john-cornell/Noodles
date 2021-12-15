@@ -34,12 +34,11 @@ namespace Noodles.Test.ExtensionTests
         {
             if (me == null)
                 return false;
-
             return Double.TryParse(Convert.ToString(me
                                                     , CultureInfo.InvariantCulture)
                                   , System.Globalization.NumberStyles.Any
                                   , NumberFormatInfo.InvariantInfo
-                                  , out double number);
+                                  , out _);
         }
 
         public static T[] AsSingleItemArray<T>(this T item)
@@ -142,7 +141,7 @@ namespace Noodles.Test.ExtensionTests
 
         public static bool IsNullOrDefault<T>(this T me)// where T : struct
         {
-            return EqualityComparer<T>.Default.Equals(me, default(T));
+            return EqualityComparer<T>.Default.Equals(me, default);
         }
 
         public static T IfNull<T>(this T me, T item)
@@ -165,7 +164,7 @@ namespace Noodles.Test.ExtensionTests
             if (conversionType.IsGenericType &&
                 conversionType.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
             {
-                if (me == null) { return default(TOutputType); }
+                if (me == null) { return default; }
 
                 conversionType = Nullable.GetUnderlyingType(conversionType);
             }
@@ -188,9 +187,9 @@ namespace Noodles.Test.ExtensionTests
             }
 
             // Don't serialize a null object, simply return the default for that object
-            if (Object.ReferenceEquals(source, null))
+            if (source is null)
             {
-                return default(T);
+                return default;
             }
 
             IFormatter formatter = new BinaryFormatter();
@@ -212,9 +211,9 @@ namespace Noodles.Test.ExtensionTests
         public static T CloneJson<T>(this T source)
         {
             // Don't serialize a null object, simply return the default for that object
-            if (Object.ReferenceEquals(source, null))
+            if (source is null)
             {
-                return default(T);
+                return default;
             }
 
             return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(source));
@@ -224,12 +223,11 @@ namespace Noodles.Test.ExtensionTests
                     this IEnumerable<T> values,
                     Int32 chunkSize)
         {
-            using (var enumerator = values.GetEnumerator())
+            using var enumerator = values.GetEnumerator();
+
+            while (enumerator.MoveNext())
             {
-                while (enumerator.MoveNext())
-                {
-                    yield return GetChunk(enumerator, chunkSize).ToList();
-                }
+                yield return GetChunk(enumerator, chunkSize).ToList();
             }
         }
         private static IEnumerable<T> GetChunk<T>(
