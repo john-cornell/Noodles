@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Noodles.Test.ExtensionTests;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Noodles.Test.ExtensionTests;
 using static Noodles.ML.Classification.DecisionTree.Question;
 
 namespace Noodles.ML.Classification.DecisionTree
@@ -33,7 +33,6 @@ namespace Noodles.ML.Classification.DecisionTree
                 {
                     return QuestionType.Discrete;
                 }
-
                 else
                 {
                     return QuestionType.Continuous;
@@ -45,7 +44,6 @@ namespace Noodles.ML.Classification.DecisionTree
             }
             else
                 return QuestionType.None;
-
         }
     }
 }

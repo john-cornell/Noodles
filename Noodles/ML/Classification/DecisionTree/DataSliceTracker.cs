@@ -1,16 +1,17 @@
-﻿using System.Collections;
+﻿using Noodles.Data.Projections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Noodles.Data.Projections;
 
 namespace Noodles.ML.Classification.DecisionTree
 {
     public class DataSliceTracker : IEnumerable<int>
     {
-        public enum Slice { Column, Row }
+        public enum Slice
+        { Column, Row }
 
-        readonly HashSet<int> _slices;
-        readonly HashSet<int> _removed;
+        private readonly HashSet<int> _slices;
+        private readonly HashSet<int> _removed;
 
         public Slice SliceType { get; private set; }
 
@@ -20,9 +21,10 @@ namespace Noodles.ML.Classification.DecisionTree
             SliceType = sliceType;
         }
 
-        public DataSliceTracker(IEnumerable<int> slices)
+        private DataSliceTracker(IEnumerable<int> slices)
         {
             _slices = new HashSet<int>(slices);
+            _removed = new HashSet<int>();
         }
 
         public DataSliceTracker Clone()

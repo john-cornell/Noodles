@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Noodles.Data.Projections;
+﻿using Noodles.Data.Projections;
 using Noodles.Exceptions;
+using System.Collections.Generic;
+using System.Linq;
 using static Noodles.ML.Classification.DecisionTree.Question;
 
 namespace Noodles.ML.Classification.DecisionTree
@@ -15,7 +15,12 @@ namespace Noodles.ML.Classification.DecisionTree
         public Dictionary<int, HashSet<object>> CategoricalData { get; set; }
         public Dictionary<int, QuestionType> QuestionTypes { get; set; }
 
-        readonly QuestionTypeClassifier _classifier;
+        private readonly QuestionTypeClassifier _classifier;
+
+        private DecisionGeneratorContext()
+        {
+            _classifier = new QuestionTypeClassifier();
+        }
 
         public DecisionGeneratorContext(DataTable dataTable, DataSliceTracker columnTracker = null, DataSliceTracker rowTracker = null, Dictionary<int, QuestionType> hints = null)
         {
@@ -45,7 +50,6 @@ namespace Noodles.ML.Classification.DecisionTree
         {
             QuestionTypes[columnIndex] = _classifier.ClassifyColumn(columnData, hint: hint);
 
-
             switch (QuestionTypes[columnIndex])
             {
                 case QuestionType.None:
@@ -54,9 +58,23 @@ namespace Noodles.ML.Classification.DecisionTree
                 case QuestionType.Labels:
                     CategoricalData[columnIndex] = new HashSet<object>(columnData.Distinct());
                     break;
+
                 default:
                     break;
             }
+        }
+
+        public DecisionGeneratorContext Clone(DataSliceTracker columnTracker = null, DataSliceTracker rowTracker = null)
+        {
+            DecisionGeneratorContext context = new DecisionGeneratorContext();
+
+            context.Table = Table;
+            context.QuestionTypes = QuestionTypes;
+            context.RowTracker = rowTracker ?? RowTracker.Clone();
+            context.ColumnTracker = columnTracker ?? ColumnTracker.Clone();
+            context.CategoricalData = CategoricalData;
+
+            return context;
         }
     }
 }

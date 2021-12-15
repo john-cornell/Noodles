@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Noodles.Data.Projections;
 using Noodles.ML.Classification.DecisionTree;
 using Noodles.Test.Utilities;
+using System.Collections.Generic;
+using System.Linq;
 using static Noodles.ML.Classification.DecisionTree.Question;
 
 namespace Noodles.Test.Data.ClassificationTests
@@ -11,8 +11,8 @@ namespace Noodles.Test.Data.ClassificationTests
     [TestClass]
     public class When_Data_Classified_As_Decision_Tree_Question
     {
-        readonly RandomProvider _random;
-        readonly QuestionTypeClassifier _classifier;
+        private readonly RandomProvider _random;
+        private readonly QuestionTypeClassifier _classifier;
 
         public When_Data_Classified_As_Decision_Tree_Question()
         {
@@ -48,7 +48,6 @@ namespace Noodles.Test.Data.ClassificationTests
                 "One",
                 "Four",
                 "One",
-
             };
 
             DataTable table = new DataTable();
@@ -92,7 +91,6 @@ namespace Noodles.Test.Data.ClassificationTests
             {
                 1,2,3,4,5,6,7,8,9,10,11
             };
-
 
             Assert.AreEqual(QuestionType.Continuous, _classifier.ClassifyColumn(data.Select(d => (object)d), discreteCountThreshold: 10));
         }

@@ -13,6 +13,8 @@ namespace Noodles.ML.Classification.DecisionTree
         private readonly DataSliceTracker _rowTracker;
         private readonly DataSliceTracker _columnTracker;
 
+        private readonly DecisionGenerator _decisionGenerator;
+
 #pragma warning restore IDE0052 // Remove unread private members
 
         public DecisionTreeClassifier(DataTable sourceData, int? labelIndex = null)
@@ -23,6 +25,8 @@ namespace Noodles.ML.Classification.DecisionTree
 
             _rowTracker = new DataSliceTracker(_sourceData, DataSliceTracker.Slice.Row);
             _columnTracker = new DataSliceTracker(_sourceData, DataSliceTracker.Slice.Column);
+
+            _decisionGenerator = new DecisionGenerator(new DecisionGeneratorContext(sourceData, _columnTracker, _rowTracker));
         }
 
         private void ValidateData(DataTable sourceData, int? labelIndex = null)
